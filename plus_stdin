@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # SPDX-FileCopyrightText: 2026 Naomi Miura
 # SPDX-License-Identifier: BSD-3-Clause
+
 import sys
 
 def tonum(s):   #def 関数の名前(引数)で関数を定義
@@ -14,3 +15,4 @@ for line in sys.stdin:
     x += tonum(line.rstrip())
 
 print(x)
+
