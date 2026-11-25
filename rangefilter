@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Naomi Miura
+# SPDX-License-Identifier: BSD-3-Clause
+"""標準入力から許容範囲外の測定値だけを取り出す。"""
+
+import math
+import sys
+
+
+def main():
+    if len(sys.argv) != 3:
+        print("使い方: rangefilter 下限 上限", file=sys.stderr)
+        return 2
+
+    try:
+        lower = float(sys.argv[1])
+        upper = float(sys.argv[2])
+        if not math.isfinite(lower) or not math.isfinite(upper):
+            raise ValueError("範囲には有限の数値を指定してください")
+        if lower > upper:
+            raise ValueError("下限は上限以下にしてください")
+    except ValueError as exc:
+        print(f"rangefilter: {exc}", file=sys.stderr)
+        return 2
+
+    out_of_range = []
+    try:
+        for line_number, line in enumerate(sys.stdin, start=1):
+            data = line.split("#", 1)[0]
+            for token in data.replace(",", " ").split():
+                try:
+                    value = float(token)
+                except ValueError as exc:
+                    raise ValueError(
+                        f"{line_number}行目に数値でない値があります: {token}"
+                    ) from exc
+                if not math.isfinite(value):
+                    raise ValueError(
+                        f"{line_number}行目に有限でない値があります: {token}"
+                    )
+                if value < lower or value > upper:
+                    out_of_range.append(token)
+    except ValueError as exc:
+        print(f"rangefilter: {exc}", file=sys.stderr)
+        return 1
+
+    for value in out_of_range:
+        print(value)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
